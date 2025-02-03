@@ -1,6 +1,14 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"easystore/configs/env"
+
+	"github.com/gin-gonic/gin"
+)
+
+func init() {
+	env.Load()
+}
 
 func main() {
 
