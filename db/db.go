@@ -1,6 +1,7 @@
 package db
 
 import (
+	"easystore/models"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -16,4 +17,6 @@ func Connect() {
 	if err != nil {
 		panic("Failed to connect to database!")
 	}
+
+	DB.AutoMigrate(&models.Outlet{})
 }
