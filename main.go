@@ -2,12 +2,14 @@ package main
 
 import (
 	"easystore/configs/env"
+	"easystore/db"
 
 	"github.com/gin-gonic/gin"
 )
 
 func init() {
 	env.Load()
+	db.Connect()
 }
 
 func main() {
