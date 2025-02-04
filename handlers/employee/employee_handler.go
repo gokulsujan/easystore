@@ -46,6 +46,7 @@ func Create(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"status":"failed", "message":"Failed to create employee"})
 		return
 	}
+	employee.OmitPassword()
 	c.JSON(200, gin.H{"status":"success","message": "Create employee", "result": employee})
 }
 
@@ -90,7 +91,7 @@ func Update(c *gin.Context) {
 // Private methods
 
 var validEmployeeFields = func(employee models.Employee, c *gin.Context) bool {
-	if employee.Name == "" || employee.Phone == "" || employee.Email == "" || employee.Password == "" || employee.Role == "" || employee.Status == "" {
+	if employee.Name == "" || employee.Phone == "" || employee.Email == "" || employee.Password == "" || employee.Role == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"All fields are required"})
 		return false
 	}
