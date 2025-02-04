@@ -11,6 +11,16 @@ import (
 
 var employee models.Employee
 
+// @Summary      Create an employee
+// @Description  Creates a new employee and returns the created employee object
+// @Tags         Employee
+// @Accept       json
+// @Produce      json
+// @Param        employee  body  dtos.EmployeeCreate  true  "Employee Details"
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      400  {object}  dtos.ErrorResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Router       /api/v1/employee [post]
 // CreateEmployee is a http request handler which creates a new employee
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
@@ -39,6 +49,17 @@ func Create(c *gin.Context) {
 	c.JSON(200, gin.H{"status":"success","message": "Create employee", "result": employee})
 }
 
+// @Summary      Update an employee
+// @Description  Updates an existing employee and returns the updated employee object
+// @Tags         Employee
+// @Accept       json
+// @Produce      json
+// @Param        employee  body  dtos.EmployeeUpdate  true  "Employee Details"
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      400  {object}  dtos.ErrorResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Router       /api/v1/employee [put]
+// UpdateEmployee is a http request handler which updates an existing employee
 func Update(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
 	if err != nil {
@@ -61,6 +82,8 @@ func Update(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"status":"failed", "message":"Failed to update employee"})
 		return
 	}
+
+	employee.OmitPassword()
 	c.JSON(200, gin.H{"status":"success","message": "Update employee", "result": employee})
 }
 

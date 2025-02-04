@@ -24,3 +24,7 @@ func (e *Employee) HashPassword() error {
 	e.Password = string(bcryptPassword)
 	return nil
 }
+
+func (e *Employee) OmitPassword() {
+	e.Password = ""
+}
