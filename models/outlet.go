@@ -4,6 +4,7 @@ import "gorm.io/gorm"
 
 type Outlet struct {
 	gorm.Model
+	Identifier  string `json:"identifier" gorm:"unique;not null"` // Unique identifier for the outlet
 	Name        string `json:"name" gorm:"unique"`
 	Description string `json:"description" gorm:"not null"`
 	Location    string `json:"location" gorm:"not null"`

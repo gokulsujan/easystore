@@ -3,6 +3,7 @@ package outlet_handler
 import (
 	"easystore/db"
 	"easystore/models"
+	handler_helper "easystore/handlers/helpers"
 	"net/http"
 	"regexp"
 
@@ -31,6 +32,9 @@ func Create(c *gin.Context) {
 	if !validOutletFields(outlet, c) {
 		return
 	}
+
+	// Generate unique identifier for outlet
+	outlet.Identifier = handler_helper.GenerateUUID()
 
 	// Save outlet to database
 	tx := db.DB.Create(&outlet)
