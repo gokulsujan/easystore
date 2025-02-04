@@ -39,6 +39,31 @@ func CreateEmployee(c *gin.Context) {
 	c.JSON(200, gin.H{"status":"success","message": "Create employee", "result": employee})
 }
 
+func UpdateEmployee(c *gin.Context) {
+	err := c.ShouldBindBodyWithJSON(&employee)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":err.Error()})
+		return
+	}
+
+	if employee.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Employee ID is required"})
+		return
+	}
+
+	if !validEmployeeFields(employee, c) {
+		return
+	}
+
+	// Save employee to database
+	tx := db.DB.Omit("password", "status", "role").Save(&employee)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status":"failed", "message":"Failed to update employee"})
+		return
+	}
+	c.JSON(200, gin.H{"status":"success","message": "Update employee", "result": employee})
+}
+
 // Private methods
 
 var validEmployeeFields = func(employee models.Employee, c *gin.Context) bool {
