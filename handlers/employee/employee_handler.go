@@ -7,6 +7,7 @@ import (
 	"regexp"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 var employee models.Employee
@@ -29,7 +30,7 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	if !validEmployeeFields(employee, c) {
+	if !validEmployeeFields("create", employee, c) {
 		return
 	}
 
@@ -73,7 +74,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	if !validEmployeeFields(employee, c) {
+	if !validEmployeeFields("update",employee, c) {
 		return
 	}
 
@@ -90,9 +91,14 @@ func Update(c *gin.Context) {
 
 // Private methods
 
-var validEmployeeFields = func(employee models.Employee, c *gin.Context) bool {
-	if employee.Name == "" || employee.Phone == "" || employee.Email == "" || employee.Password == "" || employee.Role == "" {
+var validEmployeeFields = func(operation string,employee models.Employee, c *gin.Context) bool {
+	if employee.Name == "" || employee.Phone == "" || employee.Email == "" || employee.Role == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"All fields are required"})
+		return false
+	}
+
+	if operation == "create" && employee.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Password is required"})
 		return false
 	}
 
@@ -107,7 +113,13 @@ var validEmployeeFields = func(employee models.Employee, c *gin.Context) bool {
 		return false
 	}
 
-	tx := db.DB.Where("email = ?", employee.Email).First(&employee)
+	var tx *gorm.DB
+	if operation == "update" {
+		tx = db.DB.Where("email = ?", employee.Email).Not("id = ?", employee.ID).First(&employee)
+	} else {
+		tx = db.DB.Where("email = ?", employee.Email).First(&employee)
+	}
+		
 	if tx.RowsAffected > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Email already exists"})
 		return false
