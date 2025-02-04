@@ -1,16 +1,16 @@
 package dtos
 
 type EmployeeCreate struct {
-	Name     string `json:"name"`
-	Phone    string `json:"phone"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
+	Name     string `json:"name" example:"John Doe"`
+	Phone    string `json:"phone" example:"08123456789"`
+	Email    string `json:"email" example:"jondoe@example.com"`
+	Password string `json:"password" example:"password"`
+	Role     string `json:"role" example:"admin"`
 }
 
 type EmployeeUpdate struct {
-	ID       uint   `json:"id"`
-	Name     string `json:"name"`
-	Phone    string `json:"phone"`
-	Email    string `json:"email"`
+	ID       uint   `json:"id" example:"1"`
+	Name     string `json:"name" example:"John Doe"`
+	Phone    string `json:"phone" example:"08123456789"`
+	Email    string `json:"email" example:"jondoe@example.com"`
 }
