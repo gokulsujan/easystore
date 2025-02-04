@@ -1,7 +1,9 @@
 package models
 
+import "gorm.io/gorm"
+
 type Outlet struct {
-	ID          int    `json:"id" gorm:"primary_key"`
+	gorm.Model
 	Name        string `json:"name" gorm:"unique"`
 	Description string `json:"description" gorm:"not null"`
 	Location    string `json:"location" gorm:"not null"`
