@@ -65,5 +65,23 @@ var validOutletFields = func(outlet models.Outlet, c *gin.Context) bool {
 		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Invalid email address"})
 		return false
 	}
+
+	tx := db.DB.Where("email = ?", outlet.Email).First(&outlet)
+	if tx.RowsAffected > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Email already exists"})
+		return false
+	}
+
+	tx = db.DB.Where("phone = ?", outlet.Phone).First(&outlet)
+	if tx.RowsAffected > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Phone number already exists"})
+		return false
+	}
+
+	tx = db.DB.Where(("website = ?"), outlet.Website).First(&outlet)
+	if tx.RowsAffected > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Website already exists"})
+		return false
+	}
 	return true
 }
