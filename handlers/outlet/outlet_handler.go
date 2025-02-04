@@ -11,6 +11,16 @@ import (
 
 var outlet models.Outlet
 
+// @Summary      Create an outlet
+// @Description  Creates a new outlet and returns the created outlet object
+// @Tags         Outlet
+// @Accept       json
+// @Produce      json
+// @Param        outlet  body  dtos.Outlet  true  "Outlet Details"
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      400  {object}  dtos.ErrorResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Router       /api/v1/outlet [post]
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&outlet)
 	if err != nil {
