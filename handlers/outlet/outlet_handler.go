@@ -22,6 +22,8 @@ var outlet models.Outlet
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Router       /api/v1/outlet [post]
+
+// Create is a http request handler which creates a new outlet
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&outlet)
 	if err != nil {
@@ -56,24 +58,23 @@ func Create(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Router       /api/v1/outlet [put]
+
+// UpdateOutlet is a http request handler which updates an existing outlet
 func Update(c *gin.Context) {
+	id := c.Param("id")
 	err := c.ShouldBindBodyWithJSON(&outlet)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":err.Error()})
 		return
 	}
 
-	if !validOutletFields(outlet, c) {
-		return
-	}
-
-	if outlet.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Outlet ID is required"})
+	if outlet.Name == "" && outlet.Description == "" && outlet.Location == "" && outlet.Phone == "" && outlet.Email == "" && outlet.Website == "" && outlet.Status == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Atleast one field is required"})
 		return
 	}
 
 	// Save outlet to database
-	tx := db.DB.Save(&outlet)
+	tx := db.DB.Model(models.Outlet{}).Where("id = ?", id).Updates(&outlet)
 
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status":"failed", "message":"Failed to update outlet"})
