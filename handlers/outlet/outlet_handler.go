@@ -46,6 +46,42 @@ func Create(c *gin.Context) {
 	c.JSON(200, gin.H{"status":"success","message": "Create outlet", "result": outlet})
 }
 
+// @Summary      Update an outlet
+// @Description  Updates an existing outlet and returns the updated outlet object
+// @Tags         Outlet
+// @Accept       json
+// @Produce      json
+// @Param        outlet  body  dtos.Outlet  true  "Outlet Details"
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      400  {object}  dtos.ErrorResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Router       /api/v1/outlet [put]
+func Update(c *gin.Context) {
+	err := c.ShouldBindBodyWithJSON(&outlet)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":err.Error()})
+		return
+	}
+
+	if !validOutletFields(outlet, c) {
+		return
+	}
+
+	if outlet.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Outlet ID is required"})
+		return
+	}
+
+	// Save outlet to database
+	tx := db.DB.Save(&outlet)
+
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status":"failed", "message":"Failed to update outlet"})
+		return
+	}
+	c.JSON(200, gin.H{"status":"success","message": "Update outlet", "result": outlet})
+}
+
 // Private methods
 
 var validOutletFields = func(outlet models.Outlet, c *gin.Context) bool {
