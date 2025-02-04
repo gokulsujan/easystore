@@ -92,43 +92,48 @@ func Update(c *gin.Context) {
 // Private methods
 
 var validEmployeeFields = func(operation string,employee models.Employee, c *gin.Context) bool {
-	if employee.Name == "" || employee.Phone == "" || employee.Email == "" || employee.Role == "" {
+	if operation == "create" && (employee.Name == "" || employee.Phone == "" || employee.Email == "" || employee.Role == "" && employee.Password == "") {
 		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"All fields are required"})
 		return false
 	}
 
-	if operation == "create" && employee.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Password is required"})
-		return false
-	}
 
-	if len(employee.Phone) != 10 {
+	if employee.Phone != "" && len(employee.Phone) != 10 {
 		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Phone number must be 10 digits"})
 		return false
 	}
 
-	emailRegex := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-	if !emailRegex.MatchString(employee.Email) {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Invalid email address"})
-		return false
-	}
-
 	var tx *gorm.DB
-	if operation == "update" {
-		tx = db.DB.Where("email = ?", employee.Email).Not("id = ?", employee.ID).First(&employee)
-	} else {
-		tx = db.DB.Where("email = ?", employee.Email).First(&employee)
+	emailRegex := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	if employee.Email != "" {
+		if !emailRegex.MatchString(employee.Email) {
+			c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Invalid email address"})
+			return false
+		}
+		
+		if operation == "update" {
+			tx = db.DB.Where("email = ?", employee.Email).Not("id = ?", employee.ID).First(&employee)
+		} else {
+			tx = db.DB.Where("email = ?", employee.Email).First(&employee)
+		}
+
+		if tx.RowsAffected > 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Email already exists"})
+			return false
+		}
 	}
 		
-	if tx.RowsAffected > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Email already exists"})
-		return false
-	}
 
-	tx = db.DB.Where("phone = ?", employee.Phone).First(&employee)
-	if tx.RowsAffected > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Phone number already exists"})
-		return false
+	if employee.Phone != "" {
+		if operation == "update" {
+			tx = db.DB.Where("phone = ?", employee.Phone).Not("id = ?", employee.ID).First(&employee)
+		} else {
+			tx = db.DB.Where("phone = ?", employee.Phone).First(&employee)
+		}
+		if tx.RowsAffected > 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Phone number already exists"})
+			return false
+		}
 	}
 	return true
 }
