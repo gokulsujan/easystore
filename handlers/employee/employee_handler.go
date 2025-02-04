@@ -22,6 +22,7 @@ var employee models.Employee
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Router       /api/v1/employee [post]
+
 // CreateEmployee is a http request handler which creates a new employee
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
@@ -62,6 +63,7 @@ func Create(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Router       /api/v1/employee/{id} [put]
+
 // UpdateEmployee is a http request handler which updates an existing employee
 func Update(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
