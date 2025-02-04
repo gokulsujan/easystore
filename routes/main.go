@@ -1,8 +1,9 @@
 package routes
 
 import (
-	outlet_handler "easystore/handlers/outlet"
 	_ "easystore/docs" // Import docs
+	employeeHandler "easystore/handlers/employee"
+	outletHandler "easystore/handlers/outlet"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -22,5 +23,9 @@ func Intiliaze(r *gin.Engine) {
 	api := r.Group("/api/v1")
 
 	outletRoutes := api.Group("/outlet")
-	outletRoutes.POST("", outlet_handler.Create)
+	outletRoutes.POST("", outletHandler.Create)
+
+	employeeRoutes := api.Group("/employee")
+	employeeRoutes.POST("", employeeHandler.Create)
+	employeeRoutes.PUT("", employeeHandler.Update)
 }

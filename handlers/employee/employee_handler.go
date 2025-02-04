@@ -12,7 +12,7 @@ import (
 var employee models.Employee
 
 // CreateEmployee is a http request handler which creates a new employee
-func CreateEmployee(c *gin.Context) {
+func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":err.Error()})
@@ -39,7 +39,7 @@ func CreateEmployee(c *gin.Context) {
 	c.JSON(200, gin.H{"status":"success","message": "Create employee", "result": employee})
 }
 
-func UpdateEmployee(c *gin.Context) {
+func Update(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":err.Error()})
