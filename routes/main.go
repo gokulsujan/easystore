@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"easystore/auth"
 	_ "easystore/docs" // Import docs
 	employeeHandler "easystore/handlers/employee"
 	outletHandler "easystore/handlers/outlet"
@@ -21,13 +22,15 @@ func Intiliaze(r *gin.Engine) {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := r.Group("/api/v1")
-
+	api.POST("/employee/login", employeeHandler.Login)
+	
 	outletRoutes := api.Group("/outlet")
+	outletRoutes.Use(auth.JWTMiddleware())
 	outletRoutes.POST("", outletHandler.Create)
 	outletRoutes.PUT("/:id", outletHandler.Update)
 
 	employeeRoutes := api.Group("/employee")
+	employeeRoutes.Use(auth.JWTMiddleware())
 	employeeRoutes.POST("", employeeHandler.Create)
 	employeeRoutes.PUT("/:id", employeeHandler.Update)
-	employeeRoutes.POST("/login", employeeHandler.Login)
 }
