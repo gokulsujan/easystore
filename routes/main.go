@@ -29,4 +29,5 @@ func Intiliaze(r *gin.Engine) {
 	employeeRoutes := api.Group("/employee")
 	employeeRoutes.POST("", employeeHandler.Create)
 	employeeRoutes.PUT("/:id", employeeHandler.Update)
+	employeeRoutes.POST("/login", employeeHandler.Login)
 }

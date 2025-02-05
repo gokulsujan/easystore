@@ -14,3 +14,8 @@ type EmployeeUpdate struct {
 	Phone    string `json:"phone" example:"08123456789"`
 	Email    string `json:"email" example:"jondoe@example.com"`
 }
+
+type EmployeeLogin struct {
+    Email    string `json:"email" example:"`
+    Password string `json:"password" example:"password"`
+}

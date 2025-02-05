@@ -28,3 +28,9 @@ func (e *Employee) HashPassword() error {
 func (e *Employee) OmitPassword() {
 	e.Password = ""
 }
+
+// VerifyPassword verifies the password of an employee
+func (e *Employee) VerifyPassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(e.Password), []byte(password))
+	return err == nil
+}
