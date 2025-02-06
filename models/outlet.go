@@ -7,7 +7,7 @@ type Outlet struct {
 	Identifier  string   `json:"identifier" gorm:"unique;not null"`
 	Name        string   `json:"name" gorm:"unique"`
 	Description string   `json:"description" gorm:"not null"`
-	ManagerId   uint     `json:"manager_id" gorm:"unique"`
+	ManagerId   *uint     `json:"manager_id" gorm:"unique"`
 	Manager     Employee `gorm:"foreignKey:ManagerId"`
 	Location    string   `json:"location" gorm:"not null"`
 	Phone       string   `json:"phone" gorm:"not null;size:10;unique"`
