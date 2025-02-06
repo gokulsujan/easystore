@@ -26,6 +26,7 @@ func Intiliaze(r *gin.Engine) {
 	outletRoutes.Use(auth.JWTMiddleware())
 	outletRoutes.POST("", outletHandler.Create)
 	outletRoutes.PUT("/:id", outletHandler.Update)
+	outletRoutes.PUT("/:id/assign-manager", outletHandler.AssignManager)
 
 	employeeRoutes := api.Group("/employee")
 	employeeRoutes.Use(auth.JWTMiddleware())

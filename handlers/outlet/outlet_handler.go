@@ -2,8 +2,8 @@ package outlet_handler
 
 import (
 	"easystore/db"
-	"easystore/models"
 	handler_helper "easystore/handlers/helpers"
+	"easystore/models"
 	"net/http"
 	"regexp"
 
@@ -14,11 +14,11 @@ var outlet models.Outlet
 
 // @Summary      Create an outlet
 // @Description  Creates a new outlet and returns the created outlet object
+// @Param Authorization header string true "Bearer Token"
 // @Tags         Outlet
 // @Accept       json
 // @Produce      json
 // @Param        outlet  body  dtos.Outlet  true  "Outlet Details"
-// @Param Authorization header string true "Bearer Token"
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
@@ -27,7 +27,7 @@ var outlet models.Outlet
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&outlet)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": err.Error()})
 		return
 	}
 
@@ -42,10 +42,10 @@ func Create(c *gin.Context) {
 	tx := db.DB.Create(&outlet)
 
 	if tx.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status":"failed", "message":"Failed to create outlet"})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to create outlet"})
 		return
 	}
-	c.JSON(200, gin.H{"status":"success","message": "Create outlet", "result": outlet})
+	c.JSON(200, gin.H{"status": "success", "message": "Create outlet", "result": outlet})
 }
 
 // @Summary      Update an outlet
@@ -64,12 +64,12 @@ func Update(c *gin.Context) {
 	id := c.Param("id")
 	err := c.ShouldBindBodyWithJSON(&outlet)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": err.Error()})
 		return
 	}
 
 	if outlet.Name == "" && outlet.Description == "" && outlet.Location == "" && outlet.Phone == "" && outlet.Email == "" && outlet.Website == "" && outlet.Status == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Atleast one field is required"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Atleast one field is required"})
 		return
 	}
 
@@ -77,51 +77,99 @@ func Update(c *gin.Context) {
 	tx := db.DB.Model(models.Outlet{}).Where("id = ?", id).Updates(&outlet)
 
 	if tx.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status":"failed", "message":"Failed to update outlet"})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to update outlet"})
 		return
 	}
-	c.JSON(200, gin.H{"status":"success","message": "Update outlet", "result": outlet})
+	c.JSON(200, gin.H{"status": "success", "message": "Update outlet", "result": outlet})
+}
+
+// @Summary      Assign manager to outlet
+// @Description  Assigns a manager to an outlet and returns the updated outlet object
+// @Param Authorization header string true "Bearer Token"
+// @Param  outlet_id path string true "Outlet ID"
+// @Param  manager_id query string true "Manager ID"
+// @Tags         Outlet
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      400  {object}  dtos.ErrorResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
+// @Router       /api/v1/outlet/{outlet_id}/assign-manager [put]
+func AssignManager(c *gin.Context) {
+	outletId := c.Param("id")
+	managerId := c.Query("manager_id")
+
+	// Check if outlet ID and manager ID are provided
+	if outletId == "" || managerId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Outlet ID and Manager ID are required"})
+		return
+	}
+
+	// Check if outlet exists
+	outletTx := db.DB.Where("id = ?", outletId).First(&outlet)
+	if outletTx.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Outlet not found with the given ID"})
+		return
+	}
+
+	// Check if manager exists
+	var manager models.Employee
+	managerTx := db.DB.Where("id = ?", managerId).Omit("password").First(&manager)
+	if managerTx.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Manager not found with the given ID"})
+		return
+	}
+
+	// Assign manager to outlet
+	outlet.ManagerId = &manager.ID
+	tx := db.DB.Model(&outlet).Updates(&outlet)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to assign manager to outlet"})
+		return
+	}
+	c.JSON(200, gin.H{"status": "success", "message": "Assign manager to outlet", "result": gin.H{"outlet": outlet, "manager": manager}})
 }
 
 // Private methods
 
 var validOutletFields = func(outlet models.Outlet, c *gin.Context) bool {
 	if outlet.Name == "" || outlet.Description == "" || outlet.Location == "" || outlet.Phone == "" || outlet.Email == "" || outlet.Website == "" || outlet.Status == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"All fields are required"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "All fields are required"})
 		return false
 	}
 
 	if len(outlet.Phone) != 10 {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Phone number must be 10 digits"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Phone number must be 10 digits"})
 		return false
 	}
 
 	if outlet.Status != "active" && outlet.Status != "inactive" {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Status must be active or inactive"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Status must be active or inactive"})
 		return false
 	}
 
 	emailRegex := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	if !emailRegex.MatchString(outlet.Email) {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Invalid email address"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Invalid email address"})
 		return false
 	}
 
 	tx := db.DB.Where("email = ?", outlet.Email).First(&outlet)
 	if tx.RowsAffected > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Email already exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Email already exists"})
 		return false
 	}
 
 	tx = db.DB.Where("phone = ?", outlet.Phone).First(&outlet)
 	if tx.RowsAffected > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Phone number already exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Phone number already exists"})
 		return false
 	}
 
 	tx = db.DB.Where(("website = ?"), outlet.Website).First(&outlet)
 	if tx.RowsAffected > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"status":"failed", "message":"Website already exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Website already exists"})
 		return false
 	}
 	return true
