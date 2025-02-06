@@ -8,6 +8,7 @@ import (
 	"regexp"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 var outlet models.Outlet
@@ -143,7 +144,9 @@ func AssignManager(c *gin.Context) {
 // @Router       /outlet [get]
 func GetOutlets(c *gin.Context) {
 	var outlets []models.Outlet
-	tx := db.DB.Find(&outlets)
+	tx := db.DB.Preload("Manager", func(db *gorm.DB) *gorm.DB {
+							return db.Omit("password")
+						}).Find(&outlets)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to fetch outlets"})
 		return
@@ -164,7 +167,9 @@ func GetOutlets(c *gin.Context) {
 // @Router       /outlet/{id} [get]
 func GetOutlet(c *gin.Context) {
 	id := c.Param("id")
-	tx := db.DB.Where("id = ?", id).First(&outlet)
+	tx := db.DB.Where("id = ?", id).Preload("Manager", func(db *gorm.DB) *gorm.DB {
+												return db.Omit("password")
+											}).First(&outlet)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to fetch outlet"})
 		return

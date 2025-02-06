@@ -16,11 +16,11 @@ var employee models.Employee
 
 // @Summary      Create an employee
 // @Description  Creates a new employee and returns the created employee object
+// @Param Authorization header string true "Bearer Token"
 // @Tags         Employee
 // @Accept       json
 // @Produce      json
 // @Param        employee  body  dtos.EmployeeCreate  true  "Employee Details"
-// @Param Authorization header string true "Bearer Token"
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
@@ -56,12 +56,12 @@ func Create(c *gin.Context) {
 
 // @Summary      Update an employee
 // @Description  Updates an existing employee and returns the updated employee object
+// @Param Authorization header string true "Bearer Token"
 // @Param  id path string true "Employee ID"
 // @Tags         Employee
 // @Accept       json
 // @Produce      json
 // @Param        employee  body  dtos.EmployeeUpdate  true  "Employee Details"
-// @Param Authorization header string true "Bearer Token"
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
@@ -146,8 +146,8 @@ func Login(c *gin.Context) {
 
 // @Summary      Get an employee
 // @Description  Gets an employee by ID
-// @Param  id path string true "Employee ID"
 // @Param Authorization header string true "Bearer Token"
+// @Param  id path string true "Employee ID"
 // @Tags         Employee
 // @Accept       json
 // @Produce      json
