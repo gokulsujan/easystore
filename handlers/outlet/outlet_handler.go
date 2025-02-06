@@ -131,6 +131,47 @@ func AssignManager(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "success", "message": "Assign manager to outlet", "result": gin.H{"outlet": outlet, "manager": manager}})
 }
 
+// @Summary      Get all outlets
+// @Description  Returns a list of all outlets
+// @Param Authorization header string true "
+// @Tags         Outlet
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
+// @Router       /api/v1/outlet [get]
+func GetOutlets(c *gin.Context) {
+	var outlets []models.Outlet
+	tx := db.DB.Find(&outlets)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to fetch outlets"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Get outlets", "result": gin.H{"outlets": outlets}})
+}
+
+// @Summary      Get an outlet
+// @Description  Gets an outlet by ID
+// @Param  id path string true "Outlet ID"
+// @Param Authorization header string true "
+// @Tags         Outlet
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
+// @Router       /api/v1/outlet/{id} [get]
+func GetOutlet(c *gin.Context) {
+	id := c.Param("id")
+	tx := db.DB.Where("id = ?", id).First(&outlet)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to fetch outlet"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Get outlet", "result": outlet})
+}
+
 // Private methods
 
 var validOutletFields = func(outlet models.Outlet, c *gin.Context) bool {
