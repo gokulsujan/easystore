@@ -15,6 +15,7 @@ import (
 // @version 1.0
 // @description Api documentation for Superstore backend apis
 // @host localhost:8080
+// @BasePath /api/v1
 
 func Intiliaze(r *gin.Engine) {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

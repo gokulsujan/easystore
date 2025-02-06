@@ -25,7 +25,7 @@ var employee models.Employee
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/v1/employee [post]
+// @Router       /employee [post]
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
 	if err != nil {
@@ -66,7 +66,7 @@ func Create(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/v1/employee/{id} [put]
+// @Router       /employee/{id} [put]
 func Update(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
 	if err != nil {
@@ -108,7 +108,7 @@ func Update(c *gin.Context) {
 // @Failure      401  {object}  dtos.ErrorResponse
 // @Failure      404  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
-// @Router       /api/v1/employee/login [post]
+// @Router       /employee/login [post]
 func Login(c *gin.Context) {
 	var employeeLogin dtos.EmployeeLogin
 	err := c.ShouldBindBodyWithJSON(&employeeLogin)
@@ -154,7 +154,7 @@ func Login(c *gin.Context) {
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      404  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/v1/employee/{id} [get]
+// @Router       /employee/{id} [get]
 func GetEmployee(c *gin.Context) {
 	id := c.Param("id")
 	tx := db.DB.Where("id = ?", id).First(&employee)
@@ -178,7 +178,7 @@ func GetEmployee(c *gin.Context) {
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/v1/employee [get]
+// @Router       /employee [get]
 func GetEmployees(c *gin.Context) {
 	var employees []models.Employee
 	tx := db.DB.Omit("password").Find(&employees)

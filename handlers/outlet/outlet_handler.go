@@ -23,7 +23,7 @@ var outlet models.Outlet
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/v1/outlet [post]
+// @Router       /outlet [post]
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&outlet)
 	if err != nil {
@@ -59,7 +59,7 @@ func Create(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/v1/outlet [put]
+// @Router       /outlet [put]
 func Update(c *gin.Context) {
 	id := c.Param("id")
 	err := c.ShouldBindBodyWithJSON(&outlet)
@@ -95,7 +95,7 @@ func Update(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/v1/outlet/{outlet_id}/assign-manager [put]
+// @Router       /outlet/{outlet_id}/assign-manager [put]
 func AssignManager(c *gin.Context) {
 	outletId := c.Param("id")
 	managerId := c.Query("manager_id")
@@ -133,14 +133,14 @@ func AssignManager(c *gin.Context) {
 
 // @Summary      Get all outlets
 // @Description  Returns a list of all outlets
-// @Param Authorization header string true "
+// @Param Authorization header string true "Bearer Token"
 // @Tags         Outlet
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/v1/outlet [get]
+// @Router       /outlet [get]
 func GetOutlets(c *gin.Context) {
 	var outlets []models.Outlet
 	tx := db.DB.Find(&outlets)
@@ -154,14 +154,14 @@ func GetOutlets(c *gin.Context) {
 // @Summary      Get an outlet
 // @Description  Gets an outlet by ID
 // @Param  id path string true "Outlet ID"
-// @Param Authorization header string true "
+// @Param Authorization header string true "Bearer Token"
 // @Tags         Outlet
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /api/v1/outlet/{id} [get]
+// @Router       /outlet/{id} [get]
 func GetOutlet(c *gin.Context) {
 	id := c.Param("id")
 	tx := db.DB.Where("id = ?", id).First(&outlet)
