@@ -18,9 +18,11 @@ var outlet models.Outlet
 // @Accept       json
 // @Produce      json
 // @Param        outlet  body  dtos.Outlet  true  "Outlet Details"
+// @Param Authorization header string true "Bearer Token"
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
 // @Router       /api/v1/outlet [post]
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&outlet)
@@ -48,6 +50,7 @@ func Create(c *gin.Context) {
 
 // @Summary      Update an outlet
 // @Description  Updates an existing outlet and returns the updated outlet object
+// @Param Authorization header string true "Bearer Token"
 // @Tags         Outlet
 // @Accept       json
 // @Produce      json
@@ -55,6 +58,7 @@ func Create(c *gin.Context) {
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
 // @Router       /api/v1/outlet [put]
 func Update(c *gin.Context) {
 	id := c.Param("id")

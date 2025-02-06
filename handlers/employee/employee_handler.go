@@ -20,9 +20,11 @@ var employee models.Employee
 // @Accept       json
 // @Produce      json
 // @Param        employee  body  dtos.EmployeeCreate  true  "Employee Details"
+// @Param Authorization header string true "Bearer Token"
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
 // @Router       /api/v1/employee [post]
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
@@ -59,9 +61,11 @@ func Create(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        employee  body  dtos.EmployeeUpdate  true  "Employee Details"
+// @Param Authorization header string true "Bearer Token"
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
 // @Router       /api/v1/employee/{id} [put]
 func Update(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
@@ -138,6 +142,51 @@ func Login(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"status": "success", "message": "Login successful", "result": gin.H{"accessToken": token}})
+}
+
+// @Summary      Get an employee
+// @Description  Gets an employee by ID
+// @Param  id path string true "Employee ID"
+// @Param Authorization header string true "Bearer Token"
+// @Tags         Employee
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      404  {object}  dtos.ErrorResponse
+// @Security BearerAuth
+// @Router       /api/v1/employee/{id} [get]
+func GetEmployee(c *gin.Context) {
+	id := c.Param("id")
+	tx := db.DB.Where("id = ?", id).First(&employee)
+	if tx.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"status": "failed", "message": "Employee not found"})
+		return
+	} else if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to get employee"})
+		return
+	}
+	employee.OmitPassword()
+	c.JSON(200, gin.H{"status": "success", "message": "Get employee", "result": gin.H{"employee": employee}})
+}
+
+// @Summary      Get all employees
+// @Description  Gets all employees
+// @Param Authorization header string true "Bearer Token"
+// @Tags         Employee
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
+// @Router       /api/v1/employee [get]
+func GetEmployees(c *gin.Context) {
+	var employees []models.Employee
+	tx := db.DB.Omit("password").Find(&employees)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to get employees"})
+		return
+	}
+	c.JSON(200, gin.H{"status": "success", "message": "Get employees", "result": gin.H{"employees": employees}})
 }
 
 // Private methods
