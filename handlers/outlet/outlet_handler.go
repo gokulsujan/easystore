@@ -22,8 +22,6 @@ var outlet models.Outlet
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Router       /api/v1/outlet [post]
-
-// Create is a http request handler which creates a new outlet
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&outlet)
 	if err != nil {
@@ -58,8 +56,6 @@ func Create(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Router       /api/v1/outlet [put]
-
-// UpdateOutlet is a http request handler which updates an existing outlet
 func Update(c *gin.Context) {
 	id := c.Param("id")
 	err := c.ShouldBindBodyWithJSON(&outlet)

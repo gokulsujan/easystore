@@ -24,8 +24,6 @@ var employee models.Employee
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Router       /api/v1/employee [post]
-
-// CreateEmployee is a http request handler which creates a new employee
 func Create(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
 	if err != nil {
@@ -65,8 +63,6 @@ func Create(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Router       /api/v1/employee/{id} [put]
-
-// UpdateEmployee is a http request handler which updates an existing employee
 func Update(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
 	if err != nil {
@@ -109,8 +105,6 @@ func Update(c *gin.Context) {
 // @Failure      404  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Router       /api/v1/employee/login [post]
-
-// Login is a http request handler which logs in an employee
 func Login(c *gin.Context) {
 	var employeeLogin dtos.EmployeeLogin
 	err := c.ShouldBindBodyWithJSON(&employeeLogin)
