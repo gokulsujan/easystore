@@ -2,13 +2,10 @@ package routes
 
 import (
 	"easystore/auth"
-	_ "easystore/docs" // Import docs
 	employeeHandler "easystore/handlers/employee"
 	outletHandler "easystore/handlers/outlet"
 
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title Superstore API Docs
@@ -18,9 +15,6 @@ import (
 // @BasePath /api/v1
 
 func Intiliaze(r *gin.Engine) {
-	// Swagger route
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 	api := r.Group("/api/v1")
 	api.POST("/employee/login", employeeHandler.Login)
 	
