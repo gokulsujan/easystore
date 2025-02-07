@@ -186,7 +186,7 @@ func GetOutlet(c *gin.Context) {
 // @Tags         Outlet
 // @Accept       json
 // @Produce      json
-// @Param        pincodes  body  dtos.OutletServicePincode  true  "Service Pincodes"
+// @Param        pincodes  body  dtos.OutletPincodes  true  "Service Pincodes"
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
