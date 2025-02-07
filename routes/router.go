@@ -30,6 +30,7 @@ func Intiliaze(r *gin.Engine) {
 	outletRoutes.PUT("/:id/assign-manager", outletHandler.AssignManager)
 	outletRoutes.GET("", outletHandler.GetOutlets)
 	outletRoutes.GET("/:id", outletHandler.GetOutlet)
+	outletRoutes.POST("/:id/assign-pincodes", outletHandler.AssignOutletServicePincode)
 
 	employeeRoutes := api.Group("/employee")
 	employeeRoutes.Use(auth.JWTMiddleware())

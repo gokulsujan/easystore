@@ -2,10 +2,12 @@ package outlet_handler
 
 import (
 	"easystore/db"
+	"easystore/dtos"
 	handler_helper "easystore/handlers/helpers"
 	"easystore/models"
 	"net/http"
 	"regexp"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -175,6 +177,60 @@ func GetOutlet(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Get outlet", "result": outlet})
+}
+
+// @Summary      Assign Pincodes
+// @Description  Assign service area pincodes of an outlet
+// @Param  id path string true "Outlet ID"
+// @Param Authorization header string true "Bearer Token"
+// @Tags         Outlet
+// @Accept       json
+// @Produce      json
+// @Param        pincodes  body  dtos.OutletServicePincode  true  "Service Pincodes"
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
+// @Router       /outlet/{id}/assign-pincodes [get]
+func AssignOutletServicePincode(c *gin.Context) {
+	var pincodes dtos.OutletPincodes
+	c.ShouldBindBodyWithJSON(&pincodes)
+
+	outletId := c.Param("id")
+
+	// Check if outlet ID pincodes are provided
+	if len(pincodes.Pincodes) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Pincodes are required"})
+		return
+	}
+
+	// Find outlet
+	tx := db.DB.First(&outlet)
+	if tx.RowsAffected == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Outlet not found with the given ID"})
+		return
+	}
+
+	outletIdNum, err := strconv.Atoi(outletId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Unable to convert outlet id to number", "result": gin.H{"error":"error"}})
+		return
+	}
+
+	var failedPincodes []string
+	var successPincodes []string
+	for _, pincode := range pincodes.Pincodes {
+		var outletServicePincode models.OutletServicePincode
+		outletServicePincode.OutletId =uint(outletIdNum)
+		outletServicePincode.Pincode = pincode
+		tx := db.DB.Create(outletServicePincode)
+		if tx.Error == nil {
+			successPincodes = append(successPincodes, pincode)
+		} else {
+			failedPincodes = append(failedPincodes, pincode)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message":"Pincodes assigned to the outlet", "result": gin.H{"success":successPincodes, "failed": failedPincodes}})
 }
 
 // Private methods
