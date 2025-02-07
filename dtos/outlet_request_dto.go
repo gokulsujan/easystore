@@ -9,3 +9,7 @@ type Outlet struct {
 	Website     string `json:"website" example:"attingal.superstore.com"`
 	Status      string `json:"status" example:"active"`
 }
+
+type OutletPincodes struct {
+	Pincodes []string `json:"pincodes" example:"["695606", 695101", "695103"]"`
+}
