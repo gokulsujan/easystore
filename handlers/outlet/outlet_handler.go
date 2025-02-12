@@ -125,7 +125,7 @@ func AssignManager(c *gin.Context) {
 	}
 
 	// Assign manager to outlet
-	outlet.ManagerId = &manager.ID
+	outlet.ManagerId = manager.ID
 	tx := db.DB.Model(&outlet).Updates(&outlet)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to assign manager to outlet"})
