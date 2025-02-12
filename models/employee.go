@@ -11,7 +11,6 @@ type Employee struct {
 	Phone    string `json:"phone" gorm:"not null;size:10;unique"`
 	Email    string `json:"email" gorm:"not null"`
 	Password string `json:"password" gorm:"not null"`
-	Role     string `json:"role" gorm:"not null"`
 	Status   string `json:"status" gorm:"not null"`
 }
 

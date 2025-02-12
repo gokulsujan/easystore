@@ -5,7 +5,6 @@ type EmployeeCreate struct {
 	Phone    string `json:"phone" example:"08123456789"`
 	Email    string `json:"email" example:"jondoe@example.com"`
 	Password string `json:"password" example:"password"`
-	Role     string `json:"role" example:"admin"`
 }
 
 type EmployeeUpdate struct {

@@ -7,6 +7,7 @@ import (
 	"easystore/models"
 	"net/http"
 	"regexp"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -189,10 +190,51 @@ func GetEmployees(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "success", "message": "Get employees", "result": gin.H{"employees": employees}})
 }
 
+// @Summary      Create an outlet for a manager
+// @Description  Creates a new outlet for a manager and returns the created outlet object
+// @Param Authorization header string true "Bearer Token"
+// @Param  id path string true "Manager ID"
+// @Tags         Outlet
+// @Accept       json
+// @Produce      json
+// @Param        outlet  body  dtos.Outlet  true  "Outlet Details"
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      400  {object}  dtos.ErrorResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
+// @Router       /employee/{id}/outlet [post]
+func CreateOutlet(c *gin.Context) {
+	managerIDStr := c.Param("id")
+	var manager models.Employee
+	tx := db.DB.Omit("password").First(&manager, managerIDStr)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status":"failed", "message":"Unable find manager", "result":gin.H{"error":tx.Error.Error()}})
+		return
+	}
+
+	var outlet models.Outlet
+	err := c.ShouldBindBodyWithJSON(&outlet)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status":"failed", "message":"Unable to get request body", "result": gin.H{"error":err.Error()}})
+		return
+	}
+
+	managerID, err := strconv.Atoi(managerIDStr)
+	outlet.ManagerId = uint(managerID)
+	outlet.Identifier = handler_helper.GenerateUUID()
+
+	tx = db.DB.Create(&outlet)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to create outlet", "result": gin.H{"error": tx.Error.Error()}})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Outlet created successfully", "result": gin.H{"outlet":outlet}})
+}
+
 // Private methods
 
 var validEmployeeFields = func(operation string, employee models.Employee, c *gin.Context) bool {
-	if operation == "create" && (employee.Name == "" || employee.Phone == "" || employee.Email == "" || employee.Role == "" && employee.Password == "") {
+	if operation == "create" && (employee.Name == "" || employee.Phone == "" || employee.Email == "" && employee.Password == "") {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "All fields are required"})
 		return false
 	}

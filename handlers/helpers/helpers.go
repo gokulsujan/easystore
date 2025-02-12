@@ -26,7 +26,6 @@ func GenerateEmployeeLoginJwt(e *models.Employee) (string, error) {
 		"empEmail": e.Email,
 		"exp":      time.Now().Add(time.Hour * 1).Unix(), // Expires in 1 hour
 		"iat":      time.Now().Unix(),
-		"role":     e.Role,
 	}
 
 	secretKey := os.Getenv("JSON_SECRET_KEY")

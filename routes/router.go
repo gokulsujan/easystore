@@ -27,7 +27,6 @@ func Intiliaze(r *gin.Engine) {
 	outletRoutes.Use(auth.JWTMiddleware())
 	outletRoutes.POST("", outletHandler.Create)
 	outletRoutes.PUT("/:id", outletHandler.Update)
-	outletRoutes.PUT("/:id/assign-manager", outletHandler.AssignManager)
 	outletRoutes.GET("", outletHandler.GetOutlets)
 	outletRoutes.GET("/:id", outletHandler.GetOutlet)
 	outletRoutes.POST("/:id/assign-pincodes", outletHandler.AssignOutletServicePincode)
@@ -38,4 +37,5 @@ func Intiliaze(r *gin.Engine) {
 	employeeRoutes.PUT("/:id", employeeHandler.Update)
 	employeeRoutes.GET("", employeeHandler.GetEmployees)
 	employeeRoutes.GET("/:id", employeeHandler.GetEmployee)
+	employeeRoutes.POST("/:id/outlet", employeeHandler.CreateOutlet)
 }

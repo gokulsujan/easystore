@@ -86,53 +86,6 @@ func Update(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "success", "message": "Update outlet", "result": outlet})
 }
 
-// @Summary      Assign manager to outlet
-// @Description  Assigns a manager to an outlet and returns the updated outlet object
-// @Param Authorization header string true "Bearer Token"
-// @Param  outlet_id path string true "Outlet ID"
-// @Param  manager_id query string true "Manager ID"
-// @Tags         Outlet
-// @Accept       json
-// @Produce      json
-// @Success      200  {object}  dtos.SuccessResponse
-// @Failure      400  {object}  dtos.ErrorResponse
-// @Failure      500  {object}  dtos.ErrorResponse
-// @Security BearerAuth
-// @Router       /outlet/{outlet_id}/assign-manager [put]
-func AssignManager(c *gin.Context) {
-	outletId := c.Param("id")
-	managerId := c.Query("manager_id")
-
-	// Check if outlet ID and manager ID are provided
-	if outletId == "" || managerId == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Outlet ID and Manager ID are required"})
-		return
-	}
-
-	// Check if outlet exists
-	outletTx := db.DB.Where("id = ?", outletId).First(&outlet)
-	if outletTx.RowsAffected == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Outlet not found with the given ID"})
-		return
-	}
-
-	// Check if manager exists
-	var manager models.Employee
-	managerTx := db.DB.Where("id = ?", managerId).Omit("password").First(&manager)
-	if managerTx.RowsAffected == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Manager not found with the given ID"})
-		return
-	}
-
-	// Assign manager to outlet
-	outlet.ManagerId = manager.ID
-	tx := db.DB.Model(&outlet).Updates(&outlet)
-	if tx.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to assign manager to outlet"})
-		return
-	}
-	c.JSON(200, gin.H{"status": "success", "message": "Assign manager to outlet", "result": gin.H{"outlet": outlet, "manager": manager}})
-}
 
 // @Summary      Get all outlets
 // @Description  Returns a list of all outlets
