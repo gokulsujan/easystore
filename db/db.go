@@ -19,4 +19,11 @@ func Connect() {
 	}
 
 	DB.AutoMigrate(&models.Outlet{})
+	DB.AutoMigrate(&models.Employee{})
+	DB.AutoMigrate(&models.OutletEmployee{})
+	DB.AutoMigrate(&models.OutletServicePincode{})
+	DB.AutoMigrate(&models.Product{})
+	DB.AutoMigrate(&models.ProductCategory{})
+	DB.AutoMigrate(&models.ProductVarient{})
+	DB.AutoMigrate(&models.Stock{})
 }
