@@ -5,6 +5,7 @@ import (
 	_ "easystore/docs"
 	employeeHandler "easystore/handlers/employee"
 	outletHandler "easystore/handlers/outlet"
+	product_handler "easystore/handlers/products"
 
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -38,4 +39,7 @@ func Intiliaze(r *gin.Engine) {
 	employeeRoutes.GET("", employeeHandler.GetEmployees)
 	employeeRoutes.GET("/:id", employeeHandler.GetEmployee)
 	employeeRoutes.POST("/:id/outlet", employeeHandler.CreateOutlet)
+
+	productRoutes := outletRoutes.Group(("/:outlet_id/product"))
+	productRoutes.POST("", product_handler.Create)
 }
