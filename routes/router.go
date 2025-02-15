@@ -42,4 +42,5 @@ func Intiliaze(r *gin.Engine) {
 
 	productRoutes := outletRoutes.Group(("/:outlet_id/product"))
 	productRoutes.POST("", product_handler.Create)
+	productRoutes.PUT("/:id", product_handler.Create)
 }
