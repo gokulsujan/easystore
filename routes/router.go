@@ -41,6 +41,7 @@ func Intiliaze(r *gin.Engine) {
 	employeeRoutes.POST("/:id/outlet", employeeHandler.CreateOutlet)
 
 	productRoutes := outletRoutes.Group(("/:outlet_id/product"))
+	productRoutes.GET("/:id", product_handler.GetProductDetails)
 	productRoutes.POST("", product_handler.Create)
-	productRoutes.PUT("/:id", product_handler.Create)
+	productRoutes.PUT("/:id", product_handler.Update)
 }

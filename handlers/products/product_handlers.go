@@ -13,6 +13,38 @@ import (
 var outlet models.Outlet
 var product models.Product
 
+// @Summary      Get details of a product of an outlet
+// @Description  Get a product of an outlet and returns the product object
+// @Param Authorization header string true "Bearer Token"
+// @Param  outlet_id path string true "Outlet ID"
+// @Param  id path string true "Product ID"
+// @Tags         Product
+// @Accept       json
+// @Produce      json
+// @Param        outlet  body  dtos.Product  true  "Product Details"
+// @Success      200  {object}  dtos.SuccessResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
+// @Router       /outlet/{outlet_id}/product/{id} [get]
+func GetProductDetails(c *gin.Context) {
+	if !setOutletFromContext(c) {
+		return
+	}
+	product_id := c.Param("id")
+	tx := db.DB.First(&product, product_id)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to get product details", "result": gin.H{"error": tx.Error.Error()}})
+		return
+	}
+
+	if outlet.ID != product.OutletId {
+		c.JSON(http.StatusNotFound, gin.H{"status": "failed", "message": "No product found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "failed", "message": "Product detail fetched successfully", "result": gin.H{"product": product}})
+}
+
 // @Summary      Create a product for an outlet
 // @Description  Creates a new product for an outlet and returns the created product object
 // @Param Authorization header string true "Bearer Token"
