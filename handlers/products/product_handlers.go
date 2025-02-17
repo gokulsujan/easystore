@@ -31,14 +31,9 @@ func GetProductDetails(c *gin.Context) {
 		return
 	}
 	product_id := c.Param("id")
-	tx := db.DB.First(&product, product_id)
+	tx := db.DB.Where("outlet_id = ?", outlet.ID).First(&product, product_id)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to get product details", "result": gin.H{"error": tx.Error.Error()}})
-		return
-	}
-
-	if outlet.ID != product.OutletId {
-		c.JSON(http.StatusNotFound, gin.H{"status": "failed", "message": "No product found"})
 		return
 	}
 
@@ -140,7 +135,7 @@ func Update(c *gin.Context) {
 	}
 
 	product_id := c.Param("id")
-	tx := db.DB.First(&product, product_id)
+	tx := db.DB.Where("outlet_id = ?", outlet.ID).First(&product, product_id)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to get product details", "result": gin.H{"error": tx.Error.Error()}})
 		return
@@ -154,7 +149,7 @@ func Update(c *gin.Context) {
 	}
 
 	var category models.ProductCategory
-	tx = db.DB.First(&category, productDTO.CategoryId)
+	tx = db.DB.Where("outlet_id = ?", outlet.ID).First(&category, productDTO.CategoryId)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to get category details", "result": gin.H{"error": tx.Error.Error()}})
 		return
@@ -165,7 +160,7 @@ func Update(c *gin.Context) {
 	product.CategoryId = category.ID
 	product.Status = productDTO.Status
 
-	tx = db.DB.Save(&product)
+	tx = db.DB.Where("outlet_id = ?", outlet.ID).Save(&product)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to update product", "result": gin.H{"error": tx.Error.Error()}})
 		return
