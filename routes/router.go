@@ -45,4 +45,6 @@ func Intiliaze(r *gin.Engine) {
 	productRoutes.GET("/:id", product_handler.GetProductDetails)
 	productRoutes.POST("", product_handler.Create)
 	productRoutes.PUT("/:id", product_handler.Update)
+
+	api.GET("/sample", product_handler.SampleHandler)
 }

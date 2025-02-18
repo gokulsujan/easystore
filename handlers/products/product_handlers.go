@@ -168,6 +168,10 @@ func Update(c *gin.Context) {
 	c.JSON(http.StatusAccepted, gin.H{"status": "success", "message": "Product updated successfully", "result": gin.H{"product": product}})
 }
 
+func SampleHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
 // Private methods
 var setOutletFromContext = func(c *gin.Context) bool {
 	outlet_id := c.Param("outlet_id")
