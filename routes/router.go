@@ -6,6 +6,7 @@ import (
 	employeeHandler "easystore/handlers/employee"
 	outletHandler "easystore/handlers/outlet"
 	"easystore/handlers/product_category_handler"
+	"easystore/handlers/product_varient_handler"
 	product_handler "easystore/handlers/products"
 
 	"github.com/gin-gonic/gin"
@@ -53,5 +54,11 @@ func Intiliaze(r *gin.Engine) {
 	productCategoryRoutes.GET("/:category_id", product_category_handler.GetProductCategoryDetail)
 	productCategoryRoutes.GET("", product_category_handler.GetProductCategories)
 	productCategoryRoutes.PUT("/:category_id", product_category_handler.Update)
+
+	productVarientRoutes := productRoutes.Group("/:product_id/product-varient")
+	productVarientRoutes.POST("", product_varient_handler.Create)
+	productVarientRoutes.PUT("/:varient_id", product_varient_handler.Update)
+	productVarientRoutes.GET("", product_varient_handler.GetProductVarients)
+	productVarientRoutes.GET("/:varient_id", product_varient_handler.GetProductVarient)
 
 }

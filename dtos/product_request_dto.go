@@ -9,7 +9,6 @@ type Product struct {
 }
 
 type ProductVarient struct {
-	ProductId    uint    `json:"product_id"`
 	Name         string  `json:"name"`
 	SellingPrice float64 `json:"selling_price"`
 	Mrp          float64 `json:"mrp"`
