@@ -5,6 +5,7 @@ import (
 	_ "easystore/docs"
 	employeeHandler "easystore/handlers/employee"
 	outletHandler "easystore/handlers/outlet"
+	"easystore/handlers/product_category_handler"
 	product_handler "easystore/handlers/products"
 
 	"github.com/gin-gonic/gin"
@@ -45,4 +46,8 @@ func Intiliaze(r *gin.Engine) {
 	productRoutes.GET("/:product_id", product_handler.GetProductDetails)
 	productRoutes.POST("", product_handler.Create)
 	productRoutes.PUT("/:product_id", product_handler.Update)
+
+	productCategoryRoutes := outletRoutes.Group("/:outlet_id/product-category")
+	productCategoryRoutes.Use(auth.OutletMiddleware())
+	productCategoryRoutes.POST("", product_category_handler.Create)
 }
