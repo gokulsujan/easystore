@@ -17,7 +17,7 @@ func JWTMiddleware() gin.HandlerFunc {
 		// Get token from the Authorization header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"status":"failed", "message":"No authorization header", "result": gin.H{"error": "No authorization header"}})
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "message": "No authorization header", "result": gin.H{"error": "No authorization header"}})
 			c.Abort()
 			return
 		}
@@ -25,7 +25,7 @@ func JWTMiddleware() gin.HandlerFunc {
 		// Extract token (Bearer <token>)
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenString == authHeader { // No "Bearer " prefix
-			c.JSON(http.StatusUnauthorized, gin.H{"status":"failed", "message":"Invalid token format", "result": gin.H{"error": "Invalid token format"}})
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "message": "Invalid token format", "result": gin.H{"error": "Invalid token format"}})
 			c.Abort()
 			return
 		}
@@ -33,10 +33,11 @@ func JWTMiddleware() gin.HandlerFunc {
 		// Verify token
 		_, err := VerifyJWT(tokenString)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"status":"failed", "message":"Unable to verify token", "result": gin.H{"error": err.Error()}})
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "message": "Unable to verify token", "result": gin.H{"error": err.Error()}})
 			c.Abort()
 			return
 		}
+		c.Set("token", tokenString)
 
 		// Proceed to the next handler
 		c.Next()
@@ -56,7 +57,7 @@ func VerifyJWT(tokenString string) (*jwt.MapClaims, error) {
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
 			return nil, errors.New("token has expired")
-		}		
+		}
 		return nil, errors.New("invalid token")
 	}
 
@@ -65,4 +66,11 @@ func VerifyJWT(tokenString string) (*jwt.MapClaims, error) {
 	}
 
 	return nil, errors.New("invalid token")
+}
+
+func CurrentUserID(c *gin.Context) string {
+	token, _ := c.Get("token")
+	claims, _ := VerifyJWT(token.(string))
+	claimMap := *claims
+	return claimMap["empID"].(string)
 }
