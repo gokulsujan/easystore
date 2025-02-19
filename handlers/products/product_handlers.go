@@ -30,7 +30,7 @@ func GetProductDetails(c *gin.Context) {
 	if !setOutletFromContext(c) {
 		return
 	}
-	product_id := c.Param("id")
+	product_id := c.Param("product_id")
 	tx := db.DB.Where("outlet_id = ?", outlet.ID).First(&product, product_id)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to get product details", "result": gin.H{"error": tx.Error.Error()}})
@@ -134,7 +134,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	product_id := c.Param("id")
+	product_id := c.Param("product_id")
 	tx := db.DB.Where("outlet_id = ?", outlet.ID).First(&product, product_id)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to get product details", "result": gin.H{"error": tx.Error.Error()}})

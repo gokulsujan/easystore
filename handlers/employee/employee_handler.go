@@ -75,7 +75,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
+	id := c.Param("employee_id")
 
 	if !validEmployeeFields("update", employee, c) {
 		return
@@ -157,7 +157,7 @@ func Login(c *gin.Context) {
 // @Security BearerAuth
 // @Router       /employee/{id} [get]
 func GetEmployee(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("employee_id")
 	tx := db.DB.Where("id = ?", id).First(&employee)
 	if tx.RowsAffected == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"status": "failed", "message": "Employee not found"})
@@ -204,7 +204,7 @@ func GetEmployees(c *gin.Context) {
 // @Security BearerAuth
 // @Router       /employee/{id}/outlet [post]
 func CreateOutlet(c *gin.Context) {
-	managerIDStr := c.Param("id")
+	managerIDStr := c.Param("employee_id")
 	var manager models.Employee
 	tx := db.DB.Omit("password").First(&manager, managerIDStr)
 	if tx.Error != nil {

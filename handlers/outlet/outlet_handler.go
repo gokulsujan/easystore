@@ -64,7 +64,7 @@ func Create(c *gin.Context) {
 // @Security BearerAuth
 // @Router       /outlet [put]
 func Update(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("outlet_id")
 	err := c.ShouldBindBodyWithJSON(&outlet)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": err.Error()})
@@ -121,7 +121,7 @@ func GetOutlets(c *gin.Context) {
 // @Security BearerAuth
 // @Router       /outlet/{id} [get]
 func GetOutlet(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("outlet_id")
 	tx := db.DB.Where("id = ?", id).Preload("Manager", func(db *gorm.DB) *gorm.DB {
 												return db.Omit("password")
 											}).First(&outlet)
@@ -148,7 +148,7 @@ func AssignOutletServicePincode(c *gin.Context) {
 	var pincodes dtos.OutletPincodes
 	c.ShouldBindBodyWithJSON(&pincodes)
 
-	outletId := c.Param("id")
+	outletId := c.Param("outlet_id")
 
 	// Check if outlet ID pincodes are provided
 	if len(pincodes.Pincodes) == 0 {
