@@ -51,4 +51,5 @@ func Intiliaze(r *gin.Engine) {
 	productCategoryRoutes.Use(auth.OutletMiddleware())
 	productCategoryRoutes.POST("", product_category_handler.Create)
 	productCategoryRoutes.GET("/:category_id", product_category_handler.GetProductCategoryDetail)
+	productCategoryRoutes.GET("", product_category_handler.GetProductCategories)
 }
