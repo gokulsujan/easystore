@@ -58,7 +58,7 @@ func Create(c *gin.Context) {
 // @Summary      Update an employee
 // @Description  Updates an existing employee and returns the updated employee object
 // @Param Authorization header string true "Bearer Token"
-// @Param  id path string true "Employee ID"
+// @Param  employee_id path string true "Employee ID"
 // @Tags         Employee
 // @Accept       json
 // @Produce      json
@@ -67,7 +67,7 @@ func Create(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /employee/{id} [put]
+// @Router       /employee/{employee_id} [put]
 func Update(c *gin.Context) {
 	err := c.ShouldBindBodyWithJSON(&employee)
 	if err != nil {
@@ -148,14 +148,14 @@ func Login(c *gin.Context) {
 // @Summary      Get an employee
 // @Description  Gets an employee by ID
 // @Param Authorization header string true "Bearer Token"
-// @Param  id path string true "Employee ID"
+// @Param  employee_id path string true "Employee ID"
 // @Tags         Employee
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      404  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /employee/{id} [get]
+// @Router       /employee/{employee_id} [get]
 func GetEmployee(c *gin.Context) {
 	id := c.Param("employee_id")
 	tx := db.DB.Where("id = ?", id).First(&employee)
@@ -193,7 +193,7 @@ func GetEmployees(c *gin.Context) {
 // @Summary      Create an outlet for a manager
 // @Description  Creates a new outlet for a manager and returns the created outlet object
 // @Param Authorization header string true "Bearer Token"
-// @Param  id path string true "Manager ID"
+// @Param  employee_id path string true "Manager ID"
 // @Tags         Outlet
 // @Accept       json
 // @Produce      json
@@ -202,7 +202,7 @@ func GetEmployees(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /employee/{id}/outlet [post]
+// @Router       /employee/{employee_id}/outlet [post]
 func CreateOutlet(c *gin.Context) {
 	managerIDStr := c.Param("employee_id")
 	var manager models.Employee

@@ -17,7 +17,7 @@ var product models.Product
 // @Description  Get a product of an outlet and returns the product object
 // @Param Authorization header string true "Bearer Token"
 // @Param  outlet_id path string true "Outlet ID"
-// @Param  id path string true "Product ID"
+// @Param  product_id path string true "Product ID"
 // @Tags         Product
 // @Accept       json
 // @Produce      json
@@ -25,7 +25,7 @@ var product models.Product
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /outlet/{outlet_id}/product/{id} [get]
+// @Router       /outlet/{outlet_id}/product/{product_id} [get]
 func GetProductDetails(c *gin.Context) {
 	if !setOutletFromContext(c) {
 		return
@@ -119,7 +119,7 @@ func Create(c *gin.Context) {
 // @Description  Update a product of an outlet and returns the updated product object
 // @Param Authorization header string true "Bearer Token"
 // @Param  outlet_id path string true "Outlet ID"
-// @Param  id path string true "Product ID"
+// @Param  product_id path string true "Product ID"
 // @Tags         Product
 // @Accept       json
 // @Produce      json
@@ -128,7 +128,7 @@ func Create(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /outlet/{outlet_id}/product/{id} [put]
+// @Router       /outlet/{outlet_id}/product/{product_id} [put]
 func Update(c *gin.Context) {
 	if !setOutletFromContext(c) {
 		return

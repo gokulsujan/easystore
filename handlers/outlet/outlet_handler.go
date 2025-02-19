@@ -53,6 +53,7 @@ func Create(c *gin.Context) {
 
 // @Summary      Update an outlet
 // @Description  Updates an existing outlet and returns the updated outlet object
+// @Param  outlet_id path string true "Outlet ID"
 // @Param Authorization header string true "Bearer Token"
 // @Tags         Outlet
 // @Accept       json
@@ -62,7 +63,7 @@ func Create(c *gin.Context) {
 // @Failure      400  {object}  dtos.ErrorResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /outlet [put]
+// @Router       /outlet/{outlet_id} [put]
 func Update(c *gin.Context) {
 	id := c.Param("outlet_id")
 	err := c.ShouldBindBodyWithJSON(&outlet)
@@ -86,7 +87,6 @@ func Update(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "success", "message": "Update outlet", "result": outlet})
 }
 
-
 // @Summary      Get all outlets
 // @Description  Returns a list of all outlets
 // @Param Authorization header string true "Bearer Token"
@@ -100,8 +100,8 @@ func Update(c *gin.Context) {
 func GetOutlets(c *gin.Context) {
 	var outlets []models.Outlet
 	tx := db.DB.Preload("Manager", func(db *gorm.DB) *gorm.DB {
-							return db.Omit("password")
-						}).Find(&outlets)
+		return db.Omit("password")
+	}).Find(&outlets)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to fetch outlets"})
 		return
@@ -111,7 +111,7 @@ func GetOutlets(c *gin.Context) {
 
 // @Summary      Get an outlet
 // @Description  Gets an outlet by ID
-// @Param  id path string true "Outlet ID"
+// @Param  outlet_id path string true "Outlet ID"
 // @Param Authorization header string true "Bearer Token"
 // @Tags         Outlet
 // @Accept       json
@@ -119,12 +119,12 @@ func GetOutlets(c *gin.Context) {
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /outlet/{id} [get]
+// @Router       /outlet/{outlet_id} [get]
 func GetOutlet(c *gin.Context) {
 	id := c.Param("outlet_id")
 	tx := db.DB.Where("id = ?", id).Preload("Manager", func(db *gorm.DB) *gorm.DB {
-												return db.Omit("password")
-											}).First(&outlet)
+		return db.Omit("password")
+	}).First(&outlet)
 	if tx.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Failed to fetch outlet"})
 		return
@@ -134,7 +134,7 @@ func GetOutlet(c *gin.Context) {
 
 // @Summary      Assign Pincodes
 // @Description  Assign service area pincodes of an outlet
-// @Param  id path string true "Outlet ID"
+// @Param  outlet_id path string true "Outlet ID"
 // @Param Authorization header string true "Bearer Token"
 // @Tags         Outlet
 // @Accept       json
@@ -143,7 +143,7 @@ func GetOutlet(c *gin.Context) {
 // @Success      200  {object}  dtos.SuccessResponse
 // @Failure      500  {object}  dtos.ErrorResponse
 // @Security BearerAuth
-// @Router       /outlet/{id}/assign-pincodes [get]
+// @Router       /outlet/{outlet_id}/assign-pincodes [get]
 func AssignOutletServicePincode(c *gin.Context) {
 	var pincodes dtos.OutletPincodes
 	c.ShouldBindBodyWithJSON(&pincodes)
@@ -165,7 +165,7 @@ func AssignOutletServicePincode(c *gin.Context) {
 
 	outletIdNum, err := strconv.Atoi(outletId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Unable to convert outlet id to number", "result": gin.H{"error":"error"}})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Unable to convert outlet id to number", "result": gin.H{"error": "error"}})
 		return
 	}
 
@@ -173,7 +173,7 @@ func AssignOutletServicePincode(c *gin.Context) {
 	var successPincodes []string
 	for _, pincode := range pincodes.Pincodes {
 		var outletServicePincode models.OutletServicePincode
-		outletServicePincode.OutletId =uint(outletIdNum)
+		outletServicePincode.OutletId = uint(outletIdNum)
 		outletServicePincode.Pincode = pincode
 		tx := db.DB.Create(outletServicePincode)
 		if tx.Error == nil {
@@ -183,7 +183,7 @@ func AssignOutletServicePincode(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message":"Pincodes assigned to the outlet", "result": gin.H{"success":successPincodes, "failed": failedPincodes}})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Pincodes assigned to the outlet", "result": gin.H{"success": successPincodes, "failed": failedPincodes}})
 }
 
 // Private methods
