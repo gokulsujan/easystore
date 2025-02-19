@@ -52,4 +52,6 @@ func Intiliaze(r *gin.Engine) {
 	productCategoryRoutes.POST("", product_category_handler.Create)
 	productCategoryRoutes.GET("/:category_id", product_category_handler.GetProductCategoryDetail)
 	productCategoryRoutes.GET("", product_category_handler.GetProductCategories)
+	productCategoryRoutes.PUT("/:category_id", product_category_handler.Update)
+
 }

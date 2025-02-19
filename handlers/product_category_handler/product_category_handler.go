@@ -4,6 +4,7 @@ import (
 	"easystore/db"
 	"easystore/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -100,4 +101,56 @@ func GetProductCategories(c *gin.Context) {
 	}
 	// Step 2 -> Return the category objects
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Categories fetched successfully", "result": gin.H{"categories": productCategories}})
+}
+
+// @Summary      Update a product category for an outlet
+// @Description  Update a product category for an outlet and returns the created product category object
+// @Param Authorization header string true "Bearer Token"
+// @Param outlet_id path string true "Outlet ID"
+// @Param category_id path string true "Product Category ID"
+// @Tags         Product Category
+// @Accept       json
+// @Produce      json
+// @Param        outlet  body  dtos.ProductCategory  true  "Product Details"
+// @Success      202  {object}  dtos.SuccessResponse
+// @Failure      400  {object}  dtos.ErrorResponse
+// @Failure      500  {object}  dtos.ErrorResponse
+// @Security BearerAuth
+// @Router       /outlet/{outlet_id}/product-category/{category_id} [put]
+func Update(c *gin.Context) {
+	outlet_id := c.Param("outlet_id")
+	err := c.ShouldBindBodyWithJSON(&productCategory)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to get the request body", "result": gin.H{"error": err.Error()}})
+		return
+	}
+
+	tx := db.DB.First(&outlet, outlet_id)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to find the outlet details", "result": gin.H{"error": tx.Error.Error()}})
+		return
+	}
+
+	productCategory.OutletId = outlet.ID
+	if productCategory.Title == "" && productCategory.Description == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Title and description should not be empty"})
+		return
+	}
+
+	catIdStr := c.Param("category_id")
+	catId, err := strconv.Atoi(catIdStr)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": "Invalid category id", "result": gin.H{"error": err.Error()}})
+		return
+	}
+	productCategory.ID = uint(catId)
+
+	tx = db.DB.Save(&productCategory)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": "Unable to craete category", "result": gin.H{"error": tx.Error.Error()}})
+		return
+	}
+
+	c.JSON(http.StatusAccepted, gin.H{"status": "success", "message": "Category updated successfully", "result": gin.H{"category": productCategory}})
 }
