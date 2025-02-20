@@ -4,6 +4,7 @@ import (
 	"easystore/configs/env"
 	"easystore/db"
 	"easystore/routes"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,9 @@ func init() {
 }
 
 func main() {
+	if os.Getenv("ENV") == "Production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	r := gin.Default()
 
