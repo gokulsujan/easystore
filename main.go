@@ -14,6 +14,11 @@ func init() {
 	db.Connect()
 }
 
+// @title Superstore API Docs
+// @version 1.0
+// @description API documentation for Superstore backend APIs
+// @host localhost:8080
+// @BasePath /api/v1
 func main() {
 	if os.Getenv("ENV") == "Production" {
 		gin.SetMode(gin.ReleaseMode)
